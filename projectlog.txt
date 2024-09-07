@@ -1,0 +1,78 @@
+1.  Create the project file "Twitter Clone"
+2.  Add to folders to it one named "backend" the other named "frontend" 
+3.  In the frontend folder, initialise a new react app. To do that first cd into the frontend folder then in the terminal type the
+    command "npm vite@latest .", the dot at the end is for when we want the react app to be initialised under the front end folder,
+    select Y when prompted then "React" when prompted then "JavaScript" when prompted.
+    Now run the command "npm i" to install all the node modules and dependencies and once that has been done run "npm run dev" to 
+    see the boiler plate react app.
+4.  Now to be able to create a backend we will cd into the backend folder. Before that we will run the command "npm init -y" in
+    the root just to have a better developer experience when we deploy this app. This command will give us the package.json file, so
+    that we could install our dependencies. For the backend we would like to install a couple of dependencies. So, run the 
+    "npm install express mongoose jsonwebtoken bcryptjs dotenv cors cookie-parser cloudinary"
+    express: to create our api or the express server
+    mongoose: to interact with our mongodb database
+    jsonwebtoken: for authentication
+    bcryptjs: to be able to hash passwords
+    dotenv: to be able to read the content of .env file
+    cors: to be able to get rid of cors errors
+    cookie-parser: to be able to get the cookies from the request
+    cloudinary: (package/service) so that we could upload images for free
+    The above command will install all the packages and put the node modules in our root. We also install a dev dependency, for
+    that the command will be "npm i -D nodemon". Add the "type" key in the package.json file below the "author" key and set it to
+    "module" in order to use the import and export syntax. For the scripts, delete the "test" key and then write
+    ' "dev":"nodemon backend/server.js" ' to be able to run nodemon. The "server.js" file will be under the "backend" folder 
+    (create one) hence the path after the nodemon. And for the production we will write ' "start" : "node backend/server.js" '
+    and this means we want to run this file with node. Our main file is not "index.js" anymore but "server.js" under the "backend"
+    folder so we will change the value of the "main" key to "backend/server.js".
+    Now, calling the command "npm run dev" will call the "nodemon backend/server.js" and run the server.js file. Since we are 
+    using nodemon, whenever we change the server.js file it is just going to update the server and restart the server by default.
+    Hence, nodemon is a very useful tool for development.
+5.  Create your boilerplate express server in the "server.js" to test it out.
+    ' import express from "express";
+
+    const app = express();
+
+    app.get("/", (req,res)=>{
+        res.send("Server is ready");
+    })
+
+    app.listen(8000, ()=>{
+        console.log("Server is up and running on port 8000")
+    }) '
+6.  Now, that we have our setup, we can setup our other routes. We will have a couple of different services like authentication,
+    users, posts, notifications and adding all of these to one file would make the file really large and hard to manage. Hence,
+    instead we will put routes in different folders. So, we create a "routes" folder in our backend folder and this folder is 
+    going to have some functions and again we can't put all of them into those files so instead we'll like to have some clean code 
+    and some manageable and maintainable code base and for that we are going to create a folder called "controllers" and we would 
+    like to have some tables in our database and we're going to call them "models" and since we are using mongodb which is a nosql
+    database so it is not going to be tables but something called as collections but basically it is the same thing as tables.
+7.  We add a middleware using "app.use" which says that when we visit "api/auth" we would like to go to "authRoutes". And this 
+    route we need to add to the routes folder by the name of "auth.routes.js" or any other name that we want. In this we add the
+    routes that will handle all the authentication endpoints. We use the "express.Router" instance and using this in a const 
+    variable we use the HTTP methods that we want to add to the route along with the path that we want it to follow or the 
+    endpoint that we want there. In the handler function we add the objects that we want it to return on hitting that endpoint.
+    We will use the POST methods for authentication and their handler functions also need to be put in the "auth.controller.js"
+    file that is to be created in the "controllers" folder and the reason is that if any of the handler functions become too 
+    large, the file will be unmanageable and it is the best practise to create the "controller" folder and the file in it.
+8.  To set up our signup functionality, we need a database to store our users and for this we need mongodb. So, we go to the
+    mongodb website and signin and create a new project. Then we create a new deployment selecting the free tier leaving the 
+    cluster name as it is. Now, this is going to give us a password which we need to copy and then create a .env file in our 
+    root folder and paste the password in it. Then we click "Create Database User" and then "Choose a Connection Method",
+    select the Drivers because we would like to connect the mongodb with node.js. It will say to install mongodb but we have
+    installed mongoose which is better option as it has really great support. Then we will copy the connection string with the
+    checkbox checked for "Show Password" and we will paste this string in the .env file as well. As we have copied the string
+    with the password, we will delete the previously pasted password from the .env file and set the link string equal to a
+    variable, in our case the variable name is MONGO_URI. In the link string, before the '?' symbol we will add the database
+    name, in our case twitter-db. And with this we should be able to connect to our mongo database. Now, we will go under the
+    "Network Access" and in this there should be our IP address and in this we will add another IP address and then select the
+    option "Allow access from anywhere" beccause our IP addresses could change while developing the application and we don't
+    want to get any errors.
+9.  Now, we can write a function to be able to connect to our database. We installed the dotenv dependency to be able to read the
+    .env file content. So, to use this dependency, we first import the dotenv file from dotenv then configure the dotenv by
+    "dotenv.config();" and then use "process.env.MONGO_URI" to access the variable. Now, we are going to create a folder called
+    "db" and add a file called "connectMongoDB.js". Inside this file we will just create a function to be able to connect. Now, 
+    once we listen to our server, once our server is up and running we are going to just say connectMongoDB and just call it.
+    We can also add the port number to the .env file and call it in the server.js file along with a default value and set it as
+    a variable.
+    At this point, you can commit your files to a Git Repo.
+    
