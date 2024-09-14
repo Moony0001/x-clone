@@ -74,5 +74,85 @@
     once we listen to our server, once our server is up and running we are going to just say connectMongoDB and just call it.
     We can also add the port number to the .env file and call it in the server.js file along with a default value and set it as
     a variable.
-    At this point, you can commit your files to a Git Repo.
-    
+    At this point, you can commit your files to a Git Repo. For that, we move the .gitignore file from the frontend folder to
+    the root folder and add the .env add the end of it. Then in a new terminal with the folder set as the root directory we call
+    'git init' and then stage our changes using the Git extension of vscode and then add our commit message and then commit.
+10. Now, we will first try to create our user model. So, we will add the "user.model.js" file to the "models" folder of the
+    backend. A model is kind of a table and since we are using nosql its going to be like a collection. In this we create the 
+    user schema with the first object passed in the schema being the various attributes of that schema/ fields of the user along 
+    with its constraints like type, required, unique etc. The second object to be passed in the Schema call is optional but useful
+    when we want to add member since: or created on: or updated on: fields for the user, for this we set the timestamp key as true.
+    Once the schema is done, we created the model User using the line mongoose.model("User", userSchema); and then exported User model
+11. Now, with our User model implemented and exported we can implement the user authentication route and specifically the signup
+    function. So in the auth.controller.js file we implement the handler functions. We need to get some fields from the user like
+    fullName, userName, email, password and we will get that from req.body but we cannot get this without using the middleware.
+    Middleware is just a function that runs before you do anything or after you do everything or just something in between, the thing
+    to remember is that it is a reqular function that runs between request and response. In our case we will use the express.json 
+    middleware in order to be able to parse the request body or the req.body and that is going to be the form data that is coming
+    from the user from the React application. Now that we have all those fields, for signup, first we check whether the email given
+    by the user in the signup form is valid or not, we check that using a regular expression and the test method. After this we 
+    check whether the user already has an account or not by checking in our user database if the email given by the user matches any
+    email already stored in the database, we do the same for username as well. After this, we hash the password provided by the user.
+    For this we use the bcrypt package. First we import the package bcrypt, then we generate the salt using the genSalt method and 
+    the generation of salt takes time so we add the await keyword in front of it. The genSalt method takes the salt length value as
+    a parameter and the optimal value is considered to be 10, the larger this value the longer it takes for the salt to be generated.
+    Then we call the hash method and pass it the password that the user filled in the form and the salt that was generated. Now, we 
+    create an object for the new user called newUser object which has the instance of the User model which is passed the object with 
+    the passed values and the hashedpassword. Now, once we have the user we would like to generate a token and set the cookie and
+    this token will be jsonwebtoken. For this we write an if-else statement in which if the user is generated successfully then we
+    call the generateTokenAndSetCookie function that has not been created yet but will take the parameter as the newUser._id and the
+    res or response. Next, we save the user information to the database using the save method and finally send a status code of 201
+    with the json containing the users information including it's profileImg coverImg etc. set as the default value, finally we send
+    a 400 error in the else case and a 500 error in the catch block with a debugging friendly logging of the error.
+12. Now, we move on to create the generateTokenAndSetCookie method. For that we create a new folder in our backend folder called
+    "lib" and inside this folder we create another folder called "utils" and inside this we create the generateToken.js file. In this
+    file we first import the jwt from jsonwebtoken and then export the function that we created generateTokenAndSetCookie, inside this
+    it takes the parameter as the userId as well as the res because we're going to set a cookie and send it back to the client as a 
+    response. In this we create the const token that calls the sign method that takes the userId as a payload so that we could identify
+    this user with some value and that is going to be the userId, as well as something called as the JWT_SECRET, we also set the 
+    duration in which the cookie will expire. We need to create the JWT_SECRET in our .env file. This could be any value but we will
+    create a long one using our terminal. Open the GitBash terminal and type the command "openssl rand -base64 32" and this will give 
+    us a value that we can just copy and paste it in our .env file to be saved into a variable JWT_SECRET. With our secret set, we now 
+    have the token and we would like to send it to the client as a cookie. For that we set first the name of the cookie, then we pass
+    the token that we want the server to send to the client and then the properties of the cookie that we want to set such as 
+    maximum age of the cookie, whether it cannot be accessed by client side i.e. httpOnly, the sameSite attribute for CSRF attacks, 
+    whether we want to use the https protocol to send the cookie or not. For https too we will need to set another node environment 
+    variable in our .env file that will be set to the string "development" until we are in the development phase and once we deploy
+    our application, it will be changed to "production". Now to test this out, we will use PostMan. To do that, first create a
+    workspace for your project, then add a collection called AUTH to the workspace, inside that add a request with name SIGNUP and
+    the method POST and then in the URL add the protocol name (http://) followed by localhost: followed by our port number of The
+    application, followed by /api/auth/signup, then we go to the body tab under it the raw type and the dropdown being JSON. But,
+    instead of passing all the user inputs in a JSON file, it is more convenient to use the form-urlencoded way, so we add another
+    middleware in the server.js file, just after the app.use(express.json) for parsing the urlencoded form data from the request.
+    Then we pass the attribute that we want to set as the key in the form, the name of the attribute should be exactly the same as
+    that used in the backend. Make sure that you are sending the form input through body and urlencoded and not the params tab.
+    We can check the entries in our database by going to mongodb and database.
+13. Now, we will add the login functionality. For this too we will use a try-catch block with the catch block having the same code
+    as the signup controller. Here, we will take the username and password from the req.body and then first check to see if the user
+    actually exists or not in the database. Then we will go ahead and check if the password provided by the user is correct or not,
+    given that the user actaully exists. If the user is genuine, then we will generate a cookie for that user and send it to the user,
+    just like in signup.
+14. Now, the logout functionality is very easy to implement, we just send a cookie as a response to the post request with its maxage
+    as 0 so that it immediately kills that and then return a res status of 200. 
+15. One last controller that we need to add is the getMe which will get the authenticated user. This will be used to check whether the
+    user is authenticated or not. To implement this, we initiate the try-catch block inside this we try to find the user by user._id
+    taking it from the req.body, but in request, we don't have the user._id field so we need to add this first. So in our 
+    auth.routes.js file, we have three different post methods, and at the top we will create another one router.get where we get the
+    currently authenticated user, but this should be a protected function so we add a middleware, in between the endpoint and the 
+    function name called protectRoute and then we create a folder in the backend folder called the "middleware" and inside this we
+    add the protectRoute.js file. The reason behind validating the authentication of the user is that whenever we want to perform some 
+    other functionalities, we need to be sure that it is infact the user is using that functionality, for that we send the cookie to 
+    the server and the server decodes this cookie to authenticate the user and perform the functionality that the user wanted to 
+    perform. To do this validity check, we write the protectRoute function using the try-catch block. In this too we first try to get 
+    the token from the req but we need a middleware to parse the cookie so we use the cookieParser middleware and add it to the 
+    server.js, now the token can be obtained. Now, if there is no token, we throw a token not found error, however, if there is in 
+    fact a token, then that token is decoded using the JWT_SECRET that we stored. And if the decoded returns some faulty value or it
+    is expired then we will return invalid token. Then we find the user by its id that was passed as a payload and exclude the 
+    password field from it. Next we add a just in case for user not being found and finally we set the user object of the request
+    equal to the user and then we call the next function. So, in our protectRoute, basically we are getting the token from the cookies
+    and if there is not a token, we handle it, if there is a cookie but it is invalid, again we handle it, and we need to verify this
+    token with that secret that we have created previously and if we pass this then it means we have a valid token and we use the 
+    valid userId to find our user in the database while removing the password field from it and pass this to the req object. Then the
+    next is going to call the next function i.e. getMe in this case. Now, in the getMe function, we can use the req.user._id and 
+    send that user back to the client. With this, we have all of our controllers in place for our authenication
+
