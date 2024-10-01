@@ -1,8 +1,9 @@
 1.  Create the project file "Twitter Clone"
-2.  Add to folders to it one named "backend" the other named "frontend" 
+2.  Add two folders to it, one named "backend" the other named "frontend" 
 3.  In the frontend folder, initialise a new react app. To do that first cd into the frontend folder then in the terminal type the
-    command "npm vite@latest .", the dot at the end is for when we want the react app to be initialised under the front end folder,
-    select Y when prompted then "React" when prompted then "JavaScript" when prompted.
+    command "npm vite@latest .", the dot at the end is for when we want the react app to be initialised under the frontend folder,
+    i.e. under the same folder that we have cd into, else it would prompt us to name a new directory for creating the app, select Y
+    when prompted then "React" when prompted then "JavaScript" when prompted.
     Now run the command "npm i" to install all the node modules and dependencies and once that has been done run "npm run dev" to 
     see the boiler plate react app.
 4.  Now to be able to create a backend we will cd into the backend folder. Before that we will run the command "npm init -y" in
@@ -154,5 +155,64 @@
     token with that secret that we have created previously and if we pass this then it means we have a valid token and we use the 
     valid userId to find our user in the database while removing the password field from it and pass this to the req object. Then the
     next is going to call the next function i.e. getMe in this case. Now, in the getMe function, we can use the req.user._id and 
-    send that user back to the client. With this, we have all of our controllers in place for our authenication
+    send that user back to the client. With this, we have all of our controllers in place for our authenication.
+16. Now, we move on to the user controller functions. For that, we will add the route so that whenever we go to the /users route, it
+    goes through the userRoutes. Now, we create a user.routes.js file in our routes folder and import it into our server.js. Inside
+    the user.routes.js file we add the different endpoints that we want to handle like the profile of the user, the suggestions that
+    we will provide to the user will also be handled in this route, the follow and unfollow endpoint and the profile updation route.
+    All of these routes will also be protected i.e. the user would need to be authenticated to access all these endpoints for obvious
+    reasons. Now, we will create the functions that will be called on visiting the specific endpoints. To do that first we create 
+    user.routes.js file under the routes folder and inside this file, we add the handler functions. The first function is to get the
+    user profile, we are going to be using this when we visit a user profile, so in the profile page where we can see their name, 
+    username, folllowers, following etc. To get the user profile, we will take the user name from the params of the URL and use it to
+    find the user. 
+17. Next, we write the function for the followUnfollow handler. The catch block for this one will be similar to the previous one.
+    Now, in this endpoint too, we are passing a param of id which we will use to find which user we would like to follow or unfollow.
+    Now, there are two different users that we would like to modify, the user that we would like to follow or unfollow and the current
+    user. We will use the id passed as params to get the user to modify and the current user as the user._id that we specified in 
+    the protectRoute i.e. the user who wants to follow or unfollow. Now, we perform basic checks to see whether the user is not
+    following himself/herself or if the user to modify or the current user exists or not. Then we will check whether the user already
+    follows the user or not, if it does follow the user, it will unfollow the user and if it doesn't follow the user then it will
+    follow the user. So, if user 1 follows user 2 then user 1 will have an id added to its following array and the user 2 will have
+    an id added to its followers array and vice versa happens for unfollowing a user. For adding an id into the array we use the push
+    operation of mongodb and the pull operation to remove an id from the array.
 
+18. Now, we add the notifications functionality to the follow/unfollow i.e. a notification will be sent to the user that was followed
+    informing them about who followed them but no notification will be given to inform them when they are unfollowed by someone else.
+    In order to implement the notification functionality we will create a notification model inside the models folder with the name
+    notification.model.js. Inside it we will import mongoose and then create a notification schema and add the timestamps parameter
+    to it for later use. Each notification will have a from field, to field, type field and read field. Now, we create a model of the
+    Notification schema and export it. We import this in the user.controllers.js file and then after we have update both the users for
+    the case of the follow, we create a new Notification object with the type set as "follow", from set as the req.user._id and the 
+    to set as the id of the user to whom the follow request was sent. Then, we save this Notification object to the database so that 
+    when the user that was followed logs in, he/she is notified. In the database, all the fields are stored including the createdAt
+    and updatedAt fields.
+19. Now, we move on to the next functionality that is getSuggestedUsers. For this we create a function called getSuggestedUsers
+    inside the user.controllers.js file. We need to keep in mind while creating this function that we need to exclude the current
+    user from the suggested users array as well as the users that we already follow. For this we get the following list of the current
+    user. Then we use the aggregate function of mongodb to get all the users, except the current user and create an array of 10 or so
+    such users. Then we filter these users array such that it takes every user of the users array and checks whether that user is in
+    the following array of the current user. Then the list of such users is then sliced to just contain 4 elements. Now, for each 
+    user from the suggestedUser array is taken and its password is set to null or undefined so that the password of the user is not
+    revealed in any way. This setting the password null does not take effect in the database of the app, it only affects the response
+    from the app. Then we send a status code of 200 to tell that the request worked and write the error part of the block.
+20. Now, we move on to the next functionality of updating the user's profile. A user can update it's username, fullName, email,
+    password, bio, link, profileImg and coverImg. we will declare the variables profileImg and coverImg as let as we would like to
+    update it further in the code. First, we find the user that is logged in, in the database. Next, we check that both the 
+    newPassword as well as currentPassword has been passed by the user. Then we check if the currentPassword matches the one stored
+    in the database. To check this, we use the bcrypt package, which we import into the file. Next, we check whether the newPassword
+    provided has length more than 6. Once all these checks have been passed, we generate a hash of the newPassword provided by the user
+    by passing it through 10 salt rounds and then hashing it as well. Next, we check whether the user wants to update their profileImg
+    or coverImg. To code for this, we will use cloudinary and before using it we need to create an account on cloudinary. After 
+    creating our account, we go to the dashboard where we get the cloud name and the api secret and the api key and store them as 
+    the environment variables in the .env file. Next, we go to server.js file to configure our cloudinary account. Here, we import
+    v2 as cloudinary and then config it, passing the environment variables as an object. Now, we can upload and delete images. Now,
+    we import cloudinary in the user.controllers.js file and use it to upload the image file to cloudinary. Before uploading
+    we need to take care of the pre-existing profileImg and coverImg, we need to delete those before uploading new ones in order to 
+    save the free space we have in our cloudinary account. In order to do that, we make use of the public image id used by cloudinary
+    to identify a stored image, we get this id by splitting the url by "/" and popping the last part of the url which contains the 
+    public_id and then splitting that by the "." to obtain the first part of the string which is the image id. The splitting function
+    splits the string into parts before and after the specified char such as "/" or "." and store these parts of string in the array.
+    Then, we update the fields passed by the user and if they haven't passed something, we keep those values to be the old ones and 
+    finally we save all the values to our database. Then we make our response user.password as undefined and then return the updated
+    user.
