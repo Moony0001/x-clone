@@ -216,3 +216,74 @@
     Then, we update the fields passed by the user and if they haven't passed something, we keep those values to be the old ones and 
     finally we save all the values to our database. Then we make our response user.password as undefined and then return the updated
     user.
+21. Now, we will add our post controllers. Before that we will add post.model.js. In this we will create the schema of the post model,
+    i.e. what will be included in a post for example, the user that will post, the timestamp of createdAt and updatedAt, the text or
+    image that will be posted, the likes on the posts which will be an array of user ids, and finally the comments which will be an
+    array of text along with the users that wrote that comment referenced using the user id. Then we create a model out of the schema
+    and export it. Next, in our server.js file we create an app route for the post route and import the post.routes.js.
+22. Now, we create our post routes. We first import express, initialising and exporting router. Next we start defining the routes.
+    We define routes to create post, like or unlike a post, comment on a post or delete a post.
+23. First we create the handler function for createPost and import this to the postroutes.js. For creating post, we first take the
+    text that the user passes through the request as a const and the image as a variable as we will need to change that variable later
+    Then, we get the userId of the user that is logged in and throw errors for user not existing or the user not passing anything. 
+    If the user passes an image, we pass it to the cloudinary servers and then save the response secure_url to the img variable. Next,
+    we create a new object of the Post model containing the userID, the text or the image. Finally, we save the newPost object to the
+    mongodb and send back the new post.
+24. Next, we will add the deletePost function handler. For this, we first find the post to be deleted, by using the post id that has
+    been passed through the params. Next, we check whether which is logged in currently is allowed to delete the post or not. Then, 
+    if the post has an image that needs to be deleted then we delete that image from cloudinary by using the image id, we obtain the
+    image id by using the method described above. Then, we delete the post by using the postId passed in the url and by using the 
+    mongodb method to delete an object from the database by using its id.
+25. Next, we add the comment on post function handler. For that we first get the text that the user wants to post in the comment and
+    userID of the user adding the comment. Next, we check whether the comment is empty and if the post even exists or not by finding
+    the post that is being commented on, using the id passed in the parameters of the url. Create a newComment object and push this
+    object into the comments array of the post. Save this updated post to the database. Next, we add the Notification functionality
+    to inform the author of the post that their post was commented on. We save this notification in the database for the author to 
+    find it when they login.
+26. Now, we add the Like and Unlike functionality. Here we get the postId and the userId first then find the post using the postId 
+    and then check whether the post exists or not. Next, we check whether the post is already liked by the user that is logged in.
+    If the post is liked, the post is unliked. The likes and unlikes are kept track of with the help of a likes array and the userIds
+    of the users that have liked a post. To remove a userId from the likes array, we use the updateOne method. This method is used
+    to modify a specific a document (in this case, a post), within the mongodb collection. It is a mongodb method that updates a single
+    document in the collection that matches the given filter criteria. The signature of the updateOne method is (filter, update, options)
+    filter specifies which document to update, update defines how to update the document. updateOne is used on a Mongoose Model, 
+    representing a collection of something, using this function we are telling the mongodb to update one document in the entire
+    collection based on the provided filter criteria. If we had an object instance of the collection, that would represent a specific
+    object of the collection that we had already fetched from the database. However, when using updateOne(), we are performing a 
+    direct update on the database without having to first fetch the document into memory. This is more efficient in cases where you
+    just need to modify a document and don't need to interact with the post data in the application. 
+    If the post is unliked then the post is liked and the userId of the user liking the post is added to the likes array of the post,
+    we save this updated post object to the database and send a notification to the user whose post was liked and save this notification
+    to the database.
+27. Now, we create a route to get all the posts. This route will also be protected. In this we use the .find() method to get all the
+    posts and the sort method to sort them in descending order of createdAt date so that the posts are ordered in the latest order
+    of their creation. Next, if there are no posts an empty array is returned. Now, this would work just fine, however, if we wanted
+    to get the name of the user as well when we get all the posts, we would need to use another method. This method is called populate.
+    Populate is a method used in mongoose to automatically replace the references in a document, with the actual documents they
+    refer to. In mongodb, documents can reference other documents using their _id values. The populate() method allows you to retrieve
+    the referenced documents in a single query, making it easier to work with related data. Instead of storing all the user's 
+    information in the post, you store the user's _id. Later, when querying the post, you can use populate() to replace the user's 
+    _id with the full user document. So, in the end of sort, we add the method populate() with the user passed as a parameter meaning
+    that the user will be populated. In order to remove any sensitive information from an object while populating, we will pass an 
+    object where the path:  will be the user i.e. the object that we want to populate and the select: field will be "-password" to
+    remove the password field from the user object that will be populated. In order to populate the comment section users as well
+    we will add another populate method with the path set as comments.user meaning we will populate the users that are stored in the
+    comments array again deselecting the password using the select field. 
+28. Now, if we want to see all the posts that a user has liked, then we need to update our user model in user.model.js and add another
+    field called likedPosts array and each post or each document will be a reference to the post model. We need to update this array
+    whenever a user likes or unlikes a post. We again use the updateOne method to update the likedPosts array of the User model, 
+    removing the postId from the array and adding it back when the user unlikes or likes the post. Now, we write a route to get all
+    the liked posts of a user and write its handler function using the userId passed in the params of the getAllLikedPosts to get the
+    likedPosts array of the user and then matching each id of the post with all the documents in the Post collections using the Find()
+    method. We also populate the post with user and the comments as well.
+29. Now, if we want to see the posts of the people we follow only, then we will create a separate route for that as well. We don't
+    need to pass anything in the parameters of this route. In its function, we first get the user that is logged in, next we get the
+    following array of this user and then finally get the posts that are posted by the people that the user is following by using
+    the Find() function on the Post collection, passing all the userId of the following array, to filter out the posts authored by the 
+    following of the user that is logged in, we sort these posts according to the time they were createdAt and populate the users of 
+    the posts as well as the comments.
+30. Now, if we want to see the posts of a specific user, then we create a route for that as well. The route takes the username of the
+    user whose posts we want to see as a parameter. We use this parameter to find the user with that username and save it into the
+    user const, we use this user object to get the _id of the user we want to see the posts of and use this userID to find all the
+    posts of that user by again using the Find() function. We sort these posts in descending order of their creation and populate the
+    users in the posts as well as the comments.

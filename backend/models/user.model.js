@@ -50,7 +50,14 @@ const userSchema = new mongoose.Schema({
     link:{
         type: String,
         default: "",        //This could be optional so we keep the default as empty string
-    }
+    },
+    likedPosts: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Post",
+            default: [],
+        }
+    ]
 },{timestamps: true})
 
 //Till this line the schema has been created now we create the model
