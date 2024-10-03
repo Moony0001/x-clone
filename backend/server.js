@@ -3,9 +3,11 @@ import dotenv from "dotenv"
 import cookieParser from "cookie-parser";
 import { v2 as cloudinary} from "cloudinary";
 
+//routes
 import authRoutes from "./routes/auth.routes.js" //Always remember to add the file extension after the name of the file as we are using the "type" of module
 import userRoutes from "./routes/user.routes.js" 
 import postRoutes from "./routes/post.routes.js"
+import notificationRoutes from "./routes/notification.routes.js"
 
 import connectMongoDB from "./db/connectMongoDB.js";
 
@@ -28,6 +30,8 @@ app.use(cookieParser());
 app.use("/api/auth",authRoutes);
 app.use("/api/users",userRoutes);
 app.use("/api/posts",postRoutes);
+app.use("/api/notifications",notificationRoutes);   //Don't forget to add the "/" before the api path
+
 
 app.listen(PORT, ()=>{
     console.log(`Server is up and running on port ${PORT}`);

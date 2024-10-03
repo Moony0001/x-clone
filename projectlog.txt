@@ -287,3 +287,5 @@
     user const, we use this user object to get the _id of the user we want to see the posts of and use this userID to find all the
     posts of that user by again using the Find() function. We sort these posts in descending order of their creation and populate the
     users in the posts as well as the comments.
+31. Now, we go ahead and make the notification routes. We add the app.use to the server.js for the notification routes and import it.
+    We create a notification.routes.js in the routes folder. Next, we import express in it and create express.router.
