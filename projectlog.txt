@@ -288,4 +288,66 @@
     posts of that user by again using the Find() function. We sort these posts in descending order of their creation and populate the
     users in the posts as well as the comments.
 31. Now, we go ahead and make the notification routes. We add the app.use to the server.js for the notification routes and import it.
-    We create a notification.routes.js in the routes folder. Next, we import express in it and create express.router.
+    We create a notification.routes.js in the routes folder. Next, we import express in it and create express.router. Then we add three
+    routes to it, one to get all the notfications, one to delete all notifications and one to delete only one notification. For deleting
+    one notification, we will have to pass the notification id as a parameter. Now, we write the controllers.
+32. For the getNotifications handler, we first get the userId of the user who is logged in and is checking their notifications. Next, we
+    find all the notifications, from the notifications collection, that are addressed to this logged in user by using the find() method
+    and passing it the userId for the to: field and we populate the from field of the notification and we only select the username and
+    profileImg because those are the only two fields that we want in our notifications. Next, we update the read field of the notification
+    to be true.
+33. For the deleteNotifications handler we get the userId of the user that is logged in and check the Notifications collections for the
+    notifications corresponding to the currently logged in user and delete all of those.
+34. For the deleteNotification handler we also get the notificationId from the parameter of the route. We find the notification and check
+    whether the notification actually exists or if the user is even allowed to delete the notification or not. If all these checks are 
+    passed, the notification is found and deleted using the notificationId.
+35. Now, its time to deal with the frontend. First we cd over into the frontend folder and type the command 'npm run dev'. We want to 
+    change the port of this app to 3000, for that we go into the vite.config.js inside the defineConfig function we add the server field
+    which takes in an object with the attribute of port set to 3000.
+36. Next, we would like to install tailwing and daisyUI. To install tailwind we type tailwind css vite install inside google and go to
+    site of tailwind. In there, the first step is to create a vite app which we have already done. The next command is to install the 
+    tailwind css. We paste that command into the terminal after cd-ing into the frontend folder. This command will then create a
+    tailwind.config.js file. The next step says to copy the text given on site and modify the tailwind.config.js file with that text.
+    Next, we update the index.css file by deleting everything that was previously in it and replacing it with the text given in step 4.
+    These are basically tailwind css directives that we follow so that we can use the classes that are coming with tailwind css, just like
+    react, bootstrap etc.
+37. Next, we are going to install DaisyUI using docs. It is a components library for tailwind which makes it easier to get components in a 
+    website without typing too much code. We first type in the command to install daisyUI and then add it as a plugin inside the tailwind.config.js
+    file. We are using ESM so we will first import daisyUI and the add daisyUI to the plugin. To test whether it works we can try to render
+    a component from the components section of the daisyUI website and pasting it in the return statement of the App.jsx. DaisyUI gives us
+    some color or some theme by default but if we want to extend it with our own colors we can do it, for that we go to the documentation
+    of DaisyUI and then go to the themes dropdown and choose a theme that we want. If we go to the themes sidebar we will get different
+    themes that they have and how to extend the current theme. So, we go to the github repo and take the code from the first code box and
+    paste it into the tailwind.config.js file. In the code we are using the light theme as well as the dark theme and extending it with two
+    different colors, one is twitter blue and the other is some form of black. To test whether it is working we can add the btn-primary class
+    to a button. Now, to be able to get the black theme, we add 'data-theme = "black"' to the html tag in index.html file. We will also 
+    update the title of the HTML to be 'X Clone'. Now, the theme has changed, so does the color of the button.
+38. Now, we will install react router and react icons, command given in the github repo ( npm install react-router-dom react-icons). We
+    are installing the react router dom so that we could add different pages into our application and handle the routing. Next, we need 
+    to wrap the App component with BrowserRouter in main.jsx. With the help of this now we can use any component that is coming from the 
+    react-router-dom package under the App component.
+39. Now, to be able to add different pages such as login, sign up and homepage we could use the <Routes> as well as <Route> component. We
+    follow the github repo after this. Source: https://github.com/burakorkmez/twitter-clone/blob/master/UI-DESIGN-STEPS.md We add the div
+    that contains the flex max-w-6xl mx-auto classes and to it add the Routes component. To this Routes component we add a Route component
+    for the HomePage along with two other Route components, one for login and one for signup
+40. Now, we first create the signup page under the path /src/pages/auth/signup/SignUpPage.jsx. Install the extension 
+    ES7+ React/Redux/React-Native snippets so that we can get autocomplete for React snippets. Like typing rafce will give React Arrow 
+    function export component. Similarly, we create the pages, /src/pages/auth/login/LoginPage.jsx and /src/pages/home/HomePage.jsx and
+    add the rafce snippet to each of them and import them inside App.jsx and use them in each of the Route components. Make sure we have
+    imported everything in App.jsx and main.jsx
+41. Next, we copy the code for the SignUpPage from the GitHub repo and paste it in the SignUpPage.jsx. In order for that code to work we
+    also need to add the svg for X, steps for which are mentioned in the repo as well. We can get icons from React icons. Next, we add the
+    code to the login page and after that to the home page. For the home page, we create two more files, we create CreatePost.jsx file inside
+    the home folder because that is the only component where it will be used and the Posts.jsx inside the /src/components/common folder 
+    because this component will be used commonly throughout the app. We add boilerplate code to both the files for now. Next, we create the
+    Sidebar.jsx component as well, inside the common folder as this will also be a common component and paste the code from the GitHub repo
+    into it. Now, we also need to add the Sidebar component to the App as well. We will add it just before the Routes component in App.jsx
+    If we put anything outside the Routes component it will be a common component. Next, we add some dummy data in the path,
+    /src/utils/db/dummy.js and also create a Right panel component in the common folder with the file name as RightPanel.jsx we also need
+    to import it in the App.jsx for the component to show up, so we will add it after and outside the Routes component and hence it will
+    be a shared component in all pages because it is outside of the Routes component. Next, we add something called a skeleton which is 
+    basically a component that shows up for a split second just when the site is loading to give a cool loading effect. Different skeletons
+    can be found in the components of the daisyUI documentation. When the isLoading variable is true, the component will show the skeleton
+    component/UI and when it is false it will load the actual data. Next, we add code to the CreatePost.jsx file. After this we create the 
+    Post.jsx component and the PostSkeleton.jsx component for the Posts.jsx code. Next we add the NotificationPage.jsx to the path
+    /src/pages/notification/NotificationPage.jsx and add a Route to it in the App.jsx inside the Routes component. 
