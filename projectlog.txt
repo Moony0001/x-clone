@@ -350,4 +350,89 @@
     can be found in the components of the daisyUI documentation. When the isLoading variable is true, the component will show the skeleton
     component/UI and when it is false it will load the actual data. Next, we add code to the CreatePost.jsx file. After this we create the 
     Post.jsx component and the PostSkeleton.jsx component for the Posts.jsx code. Next we add the NotificationPage.jsx to the path
-    /src/pages/notification/NotificationPage.jsx and add a Route to it in the App.jsx inside the Routes component. 
+    /src/pages/notification/NotificationPage.jsx and add a Route to it in the App.jsx inside the Routes component. For the rest of the UI,
+    keep copying and pasting from the GitHub repo, following the instructions in it.
+42. Now, we will connect the API from the react app that we have and in this part we will need data fetching and data manipulation which is
+    something like creating, updating and deleting and for that we will be using a package called react query or also known as TanStack
+    Query which is a library that allows you to fetch, cache and update data in your react apps and it is a great alternative to Redux and
+    other state management libraries. We will install it from the installation tab, pasting the command in the terminal installing it in the
+    frontend folder of the project. Once the library is installed we will initialize it inside the main.jsx and we need to wrap our App
+    component with it. First we create something called as queryClient which is coming from TanStack so we will import QueryClient and 
+    QueryClientProvider from the tanstack/react-query. Then we wrap our App component with QueryClientProvider with the client attribute 
+    in the opening tag set to {queryClient}. Now, with the help of this wrapping, we are able to use anything coming from this package
+    in our application.
+43. Next, we are going to add the sign up functionality. In the react code we have a state with the email, username, fullName and password
+    a handleSubmit button which we call on submitting the form. We need to signup the user instead of console.log-ing what the user provided,
+    when the submit button is pressed and for this we need to use mutation. We use mutation when we need to manipulate the data like creating,
+    updating and deleting and we use useQuery when we need to fetch the data. We add both after the useState that creates the state for form data.
+    We destructure useMutation which returns different states such as the mutate function and then things like isError, isPending for loading
+    states, error. Make sure to delete the already hard-coded isError function from the code, we will be using the Dynamic value from the 
+    backend. Now, inside the useMutate's parentheses, the first thing that we are going to need is something called mutationFn and its
+    going to be an async function that we pass and it will have a try-catch in it. This async function will take fields like email,
+    username, fullName and password and in the try we would just like to send a fetch request. Now, in order to make it easier
+    for us to pass the url everytime we make a fetch request, we will simply pass 'api/auth/signup' to the fetch and to be able
+    to access using just that we will have to update the vite.config.js. In this file, under the server, we will have a proxy field,
+    which will take the value for the target api and change the Origin. Basically, whenever it will see /api in a url, it will take the
+    target we passed and prefix /api with it. Then, the next thing that we would like to pass to the fetch function will be the type of 
+    method which will be "POST" in case of signup, the headers, and then we will stringify the body and then we are going to get data out
+    of this. Before this we also add a check whether the response was ok or not. Another check can be added to throw an error if there's 
+    an error in the data, otherwise we can console.log the data and return the data. Now, in the catch part, instead of console logging
+    the error we try to handle it. For this we are going to use a package called React Hot Toast. First we will need to install that package.
+    For that we type the command 'npm install react-hot-toast' in our frontend folder. After this we need to add a component called <Toaster />
+    in App.jsx at the end of all the previous components. That way we will be able to use that toast, so we call the toast function in our
+    catch block and deal with the error. Also, when we submit the form, we would like to call mutate function, so instead of console logging
+    the form data, we will just say mutate and pass the formData into it and that form data has those fields that we passed in the mutate
+    function. We could have the isPending state in the signUp button to change the text to Loading or Sign Up depending on the isPending 
+    state. We also replace the Something went wrong text with the {error.message} text. In the mutationFn we also pass onSuccess function
+    to give a message when the account has been created. In the catch error part, since we are handling the error below, we can just throw
+    error in the catch block. Also, for a more specific error, we can move the if(!res.ok) statement below the data variable and throw the
+    data.error in it and if there is no data.error then we can just throw 'Failed to create account' and hence remove the redundant if(data.error)
+    statement.
+44. Now, we move on to the LoginPage.jsx, we do the same things that we did in the SignUpPage.jsx. We rename the mutate to LoginMutation
+    for more readable code.
+45. Now, we move on to add the LogOut functionality for that we go to Sidebar.jsx. We destructure the useMutation and we don't need to 
+    pass any data to the mutationFn because we are just logging out the user. We add a try catch block in it and fetch the response in which
+    we only pass the method which will be POST and skip the headers. Next, we will get the data and then handle the errors and the onSuccess.
+    We will also call the mutate function, which we rename as Logout on clicking the logout button so we will add that as well. But first,
+    we will try to prevent default because it is wrapped under a link, if we don't prevent default then it is going to take us to that user
+    page, instead of that we want to logout. After preventDefault we add the Logout function call. Now, to check whether this is working
+    or not, we go to the login page and before logging out, in the developer mode->Application->Cookies we check for any pre-existing cookies
+    i.e. jwt tokens if they exist, when we click the logout icon, the cookie should be deleted and when we try to login a new jwt token
+    should appear.
+46. Now, we go into the App.jsx to fetch the currently authenticated user and for that we had an endpoint under the auth called "/me" that
+    will give us the currently authenticated user. We would like to call that in our App.jsx and to be able to fetch some data or to send
+    some GET request we would use useQuery from the package. This is going to give us some values like data, isLoading (instead of isPending)
+    and this is going take an object where we would pass the queryKey which is an array with the string "authUser" followed by queryFn which
+    is an async function in which there will be a try-catch block in which first we will get the response from the api endpoint /me and
+    store the res.json in the data variable then we will error handle then console log the data of the user who is authorised and return
+    the data. The catch block will throw the error. After the useQuery() we add the isLoading check which returns the LoadingSpinner if
+    the isLoading is true.
+47. Now, let's also make our routes protected so if we are authenticated, we shouldn't be able to visit the login page and if we aren't 
+    authenticated then we shouldn't be able to visit the homepage. Now, if we logout and try to visit the homepage, we can still visit 
+    it, it just tries to load as react query by default will try to send three different requests until it gets a response, so it just
+    tries to make sure if server is not crashed. First, we will rename the data to be 'authUser'. Now, in the Route component of the 
+    HomePage, we will say if we have the authUser then show the HomePage but else Navigate the user to the /login page and in the Route
+    component of the LoginPage, we will say if we don't have the authUser then show the client the login page or else Navigate them to 
+    the HomePage and we can do the exact same thing for the signup as well and repeat the same thing we did for homepage, for the 
+    notification as well as the profile page. Now, if we change the tabs, the page will refresh when we come back, this is the default 
+    behaviour of react query and we want to change that. For that we are going to change the main.jsx and in it we are going to pass the
+    queryClient an option called defaultOptions that will change the default for everything in the app. In this we will change the queries
+    object, refetcOnhWindowFocus property to false. This will apply to every single query in our App. If we don't want to add it to all of
+    them i.e. if you don't want to add it to a single query, we could just come to the queryClient and just add the queries one by one.
+    We are passing a queryKey so that in other files we could refer to this query. So, if we want to call the authUser again we don't 
+    need to call that function. Suppose if we wanted to use authUser in our ProfilePage file, then we will call the useQuery function and
+    pass it the object with the queryKey set as 'authUser'. With this, we are just calling the query to give us that data, we don't need
+    to pass the queryFn function. You can also update the cache, revalidate or invalidate the queries. So, we will use queryKey to reference
+    the queries. If we don't want to see the loading window for too long, we can add another option after the queryFn to set the retry to
+    be False. Now, it will not try to GET the page 3 times after failing once. Now in our LoginPage.jsx, onSuccess, we need to redirect to
+    the homepage and for this we have a concept called invalidating queries, basically it is going to refetch the query that we'd like to 
+    refetch. So, once we successfully log in, instead of showing a toast we're going to just invalidate the authUser query so basically
+    refetch the authUser to be able to update the UI. For refetching we need to get the queryClient (it is a hook). Then we use that
+    queryClient hook to invalidate the queries, the query we want to invalidate is the authUser and we do that in the onSuccess.
+48. If we do the same thing that we did in the LoginPage.jsx above, to the logout page it won't work, this is because even if we don't
+    have the authenticated user, the data field (that we renamed as authUser) is just going to be an empty object. When you invalidate the
+    query, it returns an empty object. In order to be able to fix this, in the queryFn after declaring the data variable, we will check if
+    there is data.error, which if there is, will mean the user is unauthorized, we will just return null. Once we do this it should run.
+    To remove the Sidebar and RightPanel we just wrap those components with an AND with the authUser. Now, we try to remove the hard
+    coded data from the sidebar and try to display the authenticated user in the sidebar. For that we are going to call the authenticated
+    user. Since we have the queryKey we can refer to it using the useQuery hook.
