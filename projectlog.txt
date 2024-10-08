@@ -435,4 +435,21 @@
     there is data.error, which if there is, will mean the user is unauthorized, we will just return null. Once we do this it should run.
     To remove the Sidebar and RightPanel we just wrap those components with an AND with the authUser. Now, we try to remove the hard
     coded data from the sidebar and try to display the authenticated user in the sidebar. For that we are going to call the authenticated
-    user. Since we have the queryKey we can refer to it using the useQuery hook.
+    user. Since we have the queryKey we can refer to it using the useQuery hook, we destructure this and replace the 'data' variable
+    everywhere with 'authUser' which is the variable that we have renamed 'data' to.
+49. Now, we add the functionality where when we click on the 'For You' it fetches all the posts in the database and when we click the
+    'Following' we get all the posts that the user's following have posted. For this, we need to go to Posts.jsx. This Posts will first 
+    take a field called 'feedType' which can either be 'For You' or 'Following' and we are going to use this prop to change the endpoint.
+    We create a function called getPostEndpoint. In this function we use a swtich statement to return an endpoint based on the feedType
+    variable value. We store this return value to POST_ENDPOOINT variable which calls the getPostEndpoint function. Now, we use the 
+    useQuery hook to get the data which we rename as posts and the isLoading variable, deleting the one that we hard-coded earlier. In 
+    this we define the queryKey as "posts" and the queryFn where it fetches the endpoint and the data from that endpoint. We error check
+    the response and return the data. Now, below, in the return statement of the Posts.jsx, we replace the hard coded POSTS data with 
+    the data that we fetched above. Also, delete the import of the hardcoded data after replacing all the POSTS. Then, we go into the 
+    Post.jsx where we take the post as a prop and just render the fullName, username, post image, post content. Finally we go to the 
+    HomePage.jsx and pass the feedType as feedType to the Posts component on line 40. So, when you click that button its going to update
+    that state. Now, we need to refetch the data when it changes state, the response is in the cache so it is the same so it doesn't try
+    to fetch that. This is something that we can get from react-query as well as a field called isRefetching which is the loading state for
+    refetch and we can call this whenever the feedType changes. So, after the useQUery, we call the useEffect and when the feedType changes
+    we are going to call the refetch function. We pass refetch with feedType in this so that it doesn't give us any warning and if it is
+    refetching we could show the loading skeleton as well and when it is NOT fetching then we can show the posts.
