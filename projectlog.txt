@@ -484,3 +484,22 @@
     database, basically if the length of the suggestedUsers array was 0 then we would want to display a fake div component in place of
     the small box of suggested users so that the posts container of the website doesn't stretch and occupy the empty space. For that we add 
     a check for this just before the return statement.
+53. Now, we are going to add the follow/unfollow functionality. For that we are not going to the RightPanel and just write the code there, 
+    we are not going to add that functionality to this component and the reason is we would like to make this reusable, we would like to 
+    use this functionality both in the right panel as well as the profile page. For this we are going to create a custom hook and use that
+    in both the places. For that we will go under /frontend/src and create a folder called hooks and inside this we create a file named
+    useFollow.jsx, which will be a reusable file. First we will import the toast and useMutation files. We create a variable named
+    useFollow which we export as default in this we create a variable named queryClient to invalidate some queries. Then we call the 
+    useMutation and name the mutate function as follow and write the mutationFn in which we pass the userId of the user that we want to 
+    follow and then fetch the endpoint for following the user, the method is POST and we save the response that we get into the data and
+    handle the errors. We add an onError which displays the error as a toast. In the onSuccess we will invalidate two queries, the first
+    one is going to be the suggested users that we fetched because if we followed a user from that container then we don't want to see that
+    user in that container. The other query that we will invalidate is going to be the authUser, the reason is because when we are going
+    to follow a user from their profile, we are going to update the button to be unfollow and to be able to implement this we need to fetch
+    the user profile, the authenticated user because we are going to be using a field called following or the followers. If we want to 
+    invalidate more than one queries, we can just Promise.all() so that they can run in parallel so that they execute that much faster.
+    Finally we return the follow and isPending from the hook. Now, we go to the RightPanel.jsx and when we click the follow button we would
+    like to call the mutation. We call the useFollow function and save the data it returns to the variables follow and isPending, we can 
+    use the follow functionality by simply doing that. Now, we go to the follow button component and to the onClick event handler, we add
+    the function call to follow function passing the user._id along to it. We can also add a loading state in which if it is pending
+    then it will show the LoadingSpinner else we will say follow, remember to import the LoadingSpinner component.
