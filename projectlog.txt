@@ -462,3 +462,15 @@
     onSuccess in which we add the toast that the Post has been deleted successfully and invalidate the query by first declaring a variable 
     calling the function useQueryClient and then using it to invalidate it using the queryKey. We also use the isPending state to show or 
     remove the trash icon and the Loading Spinner.
+51. Now, we add the functionality to create a Post for that we go inside CreatePost.jsx. In this component, we have two states to hold the
+    text as well as image and we have an imageRef so that when we click on the image icon, we could open up an image file explorer. Then,
+    we have some hardcoded data with two more variables for pending and error state which we will replace with the value coming from the
+    react-query and when we submit the form we're going to get the alert that says post created successfully and then a function to render
+    the image on the client. Now, first we get the authenticated user using the react-query, then we are going to get the queryClient 
+    because we will be invalidating the queries, we're going to update the cache. When we submit the form, we are going to call a function
+    called createPost in which we are going to pass the text as well as the image. The createPost is going to be the mutate function that
+    we call now. The mutationFn will take the text and image as the two input parameters and we will send a POST request to be able to
+    create the post. We will get the response data back and handle all the errors. After the mutationFn we will add the onSuccess function
+    that will show a Post created toast and invalidate the query and also set the text and image field of the post creating window as
+    empty string and null.
+52. 
