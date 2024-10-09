@@ -472,5 +472,9 @@
     we call now. The mutationFn will take the text and image as the two input parameters and we will send a POST request to be able to
     create the post. We will get the response data back and handle all the errors. After the mutationFn we will add the onSuccess function
     that will show a Post created toast and invalidate the query and also set the text and image field of the post creating window as
-    empty string and null.
+    empty string and null. When we try to upload a image of size greater than 100kb, error is thrown this is because this is the default
+    limit set for the size of the image that can be uploaded in a post. To change that we go to the backend folder to the server.js file
+    and in the app.use(express.json()) we pass the field 'limit' and the value 5mb to it so that we can upload an image of upto 5mb now.
+    This limit shouldn't be too large because if an attacker sends too large requests to our application then our server will crash due
+    to denial of service.
 52. 
