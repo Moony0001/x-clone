@@ -477,4 +477,10 @@
     and in the app.use(express.json()) we pass the field 'limit' and the value 5mb to it so that we can upload an image of upto 5mb now.
     This limit shouldn't be too large because if an attacker sends too large requests to our application then our server will crash due
     to denial of service.
-52. 
+52. Now, we move on to the suggested user functionality or component. We will add real users to it instead of the hard coded data. We 
+    delete the hardcoded isLoading variable and add a useQuery hook. We are creating a query for getting the suggestedUsers from the
+    backend for that we fetch it from the api route we specified in the backend and save it in the suggestedUsers variable which we replace
+    in the entire component in place of the hard coded data. Now, if we had no users in our database or a user followed everyone in the 
+    database, basically if the length of the suggestedUsers array was 0 then we would want to display a fake div component in place of
+    the small box of suggested users so that the posts container of the website doesn't stretch and occupy the empty space. For that we add 
+    a check for this just before the return statement.
