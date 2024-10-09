@@ -453,3 +453,12 @@
     refetch and we can call this whenever the feedType changes. So, after the useQUery, we call the useEffect and when the feedType changes
     we are going to call the refetch function. We pass refetch with feedType in this so that it doesn't give us any warning and if it is
     refetching we could show the loading skeleton as well and when it is NOT fetching then we can show the posts.
+50. Now, we add the DELETE Post functionality. Now, the all of the users can see the delete button on every post, we need to change that
+    such that only the owners of the post can see the button and delete their own post and no one else. For that we go to Post.jsx, Here
+    the isMyPost = true is a hard-coded data and we need to change it to a user-specific data so we get the authenticated user using the
+    useQuery and the queryKey. Now, we check if the user is the owner of the post or not if it is so, only then we show the trash icon.
+    Now, when we click this icon, we want to call a function that deletes the post i.e. handleDeletePost and we are going to call the
+    mutation. In this we fetch the post using the postId and pass the DELETE method to it to delete it. After the mutationFn we add the 
+    onSuccess in which we add the toast that the Post has been deleted successfully and invalidate the query by first declaring a variable 
+    calling the function useQueryClient and then using it to invalidate it using the queryKey. We also use the isPending state to show or 
+    remove the trash icon and the Loading Spinner.
