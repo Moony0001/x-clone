@@ -503,3 +503,30 @@
     use the follow functionality by simply doing that. Now, we go to the follow button component and to the onClick event handler, we add
     the function call to follow function passing the user._id along to it. We can also add a loading state in which if it is pending
     then it will show the LoadingSpinner else we will say follow, remember to import the LoadingSpinner component.
+54. Now, we will add the like and comment functionality. For this we need to go to the Post.jsx because that is where the button is.
+    In that component we have a function called handleLikePost which is called when we call the div that holds the icon. We also have a 
+    modal component from DaisyUI, something that is copied and pasted from their documentation, each dialog must have a unique id and we 
+    are making it unique by using the postID, the dialog is the box that will open when clicking on comments, this is where we will see 
+    the comments on the post. Each of these dialogs/modals will be different for every post and we need to let daisyUI know that and we are
+    doing this by passing a unique id. When we click the comment icon, that's how we are opening the actual correct modal by getting 
+    elementbyid and passing the postID and then it is going to show that modal. We change the component used for showing that comment
+    is being posted to the LoadingSpinner component that we created. Now, we add the mutation function in which we fetch the endpoint that
+    posts the like to that post passed as the postID. We handle the errors. In the onSuccess function, we invalidate the posts query but 
+    that is not the best UX. In the handleLikePost function, we first check if the component is in the isLiking state and returns if it is
+    so, else it calls the likePost() function. This optimization is useful if a user likes the post while the post is in the loading state
+    when you like a button you have one second of loading state and at that moment if we clicked the button, then the handleLikePost is 
+    going to be called but the if check statement is going to hold it and return it out of the function. Now, we add a loading spinner as 
+    well. Now, if we revalidate or invalidate the queries, when we like a post, all the posts are refetched which is a bad UX, instead we
+    want the like count to simply increase and nothing else. For, this we need to update the cache instead of revalidating or invalidating
+    the queries. To be able to do this, first we need to update something in the backend, for this we first go into post.controllers.js, in
+    this we update the likeUnlikePost function. In the previous implementation, when we unlike a post, we are using the updateOne function 
+    to directly update the database and leave the client side data as it is i.e. we don't update the client-side information making that 
+    data redundant. So, now we get an array of the updatedLikes as well, for this we would like to filter out the userID of the user 
+    unliking the post from the likes array of the post and then return this array in the response. Same for when a user likes the post.
+    So, when we like or unlike, we are returning the updated likes array so that we could update our cache with the new array. For this, 
+    we go back to our Post.jsx and in the onSuccess, we call the queryClient because this is where the caching is kind of stored, in this
+    we want to setQueryData and the one we are interested in is "posts" and this is going to return us the oldData in the function and we
+    will get the updatedLikes from the backend which will be passed  to the onSuccess function as a parameter. In the queryClient function
+    we will map through the oldData of the post and for every post we will check if the current post is the post that the user is liking, 
+    if it is that post then we will return all the other values of the post but we'll just update the likes array with the one that we just
+    got i.e. the updatedLikes array and if it is not the same post then we will return the post as it is.

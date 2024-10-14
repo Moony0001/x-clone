@@ -105,7 +105,9 @@ export const likeUnlikePost = async (req, res) => {
             //Unlikes post
             await Post.updateOne({_id: postId}, {$pull: {likes: userId}});  //***If you had an object instance of Post, that would represent a specific post that you had already fetched from the database. However, when using updateOne(), you are performing a direct update on the database without having to first fetch the document into memory. This is more efficient in cases where you just need to modify a document and don't need to interact with the post data in the application.
             await User.updateOne({_id: userId}, {$pull: {likedPosts: postId}});     //This line is removing the post from the likedPosts array of the user who unliked the post 
-            res.status(200).json({message: "Post unliked successfully"});
+            
+            const updatedLikes = post.likes.filter((id) => id.toString() !== userId.toString());
+            res.status(200).json(updatedLikes);
         }else{
             //Likes post 
             post.likes.push(userId);    //We can use the updateOne method here as well but we are using the save method here to show you that you can use both methods
@@ -119,8 +121,9 @@ export const likeUnlikePost = async (req, res) => {
             })
 
             await notification.save();
+            const updatedLikes = post.likes;
 
-            res.status(200).json({message: "Post liked successfully"});
+            res.status(200).json(updatedLikes);
         }
     } catch (error) {
         console.log("Error in likeUnlikePost controller: ", error);
