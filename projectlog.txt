@@ -534,3 +534,6 @@
     unliking posts. We also want to make the formattedDate dynamic instead of hard coded. For this under /src/utils/ we create a date folder
     in which we create a file index.js in this we paste the code from the github repo and then call the function in the formattedDate 
     variable passing the post.createdAt field to it.
+56. Now, we are going to add the Notifications page. For this, we go to the NotificationPage.jsx file. In this we delete all the hard coded
+    data and the deleteNotifications variable. We first import useQuery and useMutation from tanstack and then we create a query to fetch
+    all the notifications of the authUser from the api endpoint then we write the mutation function to delete all the notifications.
