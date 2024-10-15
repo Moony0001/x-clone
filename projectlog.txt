@@ -537,3 +537,22 @@
 56. Now, we are going to add the Notifications page. For this, we go to the NotificationPage.jsx file. In this we delete all the hard coded
     data and the deleteNotifications variable. We first import useQuery and useMutation from tanstack and then we create a query to fetch
     all the notifications of the authUser from the api endpoint then we write the mutation function to delete all the notifications.
+57. Now, we want to make the profilePage dynamic for that we go to profilePage.jsx where we need to create a query. We will delete the
+    hard coded data and get back some actual data using the useQuery, naming the query as userProfile and in the queryFn we fetch the
+    endpoint to get the user's profile. In this endpoint, the username of the user is required and we can get this username using react
+    router dom i.e. using the params of the url. Then we handle the errors. Now, we add the feature of refetching whenever the user profile
+    or the URL changes. We need to call the refetch whenever the username changes in the URL, for this we will call the useEffect function.
+    We will like to show the loading skeleton while refetching as well so we add that condition as well. We also change the joined at 
+    data in the profile as well from a hard coded data to the actual data. We have already copied the function required for this under the 
+    utils/data/index.js file. We use this function and create a variable to store this value. Remember to place the creation of this variable
+    after getting the user variable. Now, we will try to fetch the posts for the user. There are two options for these, either fetch the 
+    posts the user has authored or fetch the posts that the user has liked. For this we need to go to Posts.jsx and update the switch case
+    a little bit, for now we have 2 different cases so we add one more case where we fetch the posts of the user, then we change our endpoint
+    where it returns "/api/posts/user/${username}" and same as earlier, we can get this username using react router dom or we can just pass
+    it as a prop to the Posts component in ProfilePage.jsx passing the username attribute the value, username. And another case for us 
+    would be to fetch the liked posts of the user so we will add the endpoint to get those (figure out the endpoints from post.route.js).
+    Remember to pass all the props i.e. feedType, username and userId from the profilePage Posts component to the Posts.jsx. The feedType
+    that we have by default for the profile page is posts but when we click to the likes button it is going to update that state and it is
+    going to re run the function. We have a useEffect that checks whenever the feedType changes it is going to run the refetch and 
+    whenever the username changes it should also run this refetch function, if we don't do that then when we switch to another person's 
+    profile it only updates the profile and not the posts.
