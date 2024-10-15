@@ -556,3 +556,36 @@
     going to re run the function. We have a useEffect that checks whenever the feedType changes it is going to run the refetch and 
     whenever the username changes it should also run this refetch function, if we don't do that then when we switch to another person's 
     profile it only updates the profile and not the posts.
+58. Now, we will add the functionality to update user profile. But first we will add the follow/unfollow users button to the profiles that
+    are not the auth user's and we will update that in the profile page. We are going to show the editProfileModal only if the profile is
+    my profile. We will change the value from being hard coded to dynamic. We will place the variable after the query for fetching the
+    user profile because we will be using the user variable. Now, when we click that follow button instead of showing an alert we would like
+    to call our custom hook. We import the custom hook first and then from this we call the useFollow function which will return us two
+    values, first the follow function and the isPending state. We call this follow function when that follow button is clicked. So if it is
+    pending we would like to show that it is loading and if the user already follows that user then we want to make the button say unfollow
+    and to check if we follow the user or not we use another variable. To check this, we check the authUser's following array whether it
+    contains the userId of the user whose profile we are on, this is better than checking the followers array of the user whose profile we
+    are on for the authUser because, on following someone successfully we are already invalidating the authUser which will help refresh 
+    the page automatically however if we opt the latter we would have to invalidate something else as well. Now its time to update the 
+    user profile and for this we need to create a useMutation because we need to send some post requests. In the ProfilePage.jsx we can 
+    only update the profile image and the cover image, to be able to update the email, phone number etc. we will update the EditProfileModal.jsx
+    For the coverImg and the profileImg, we call the useMutation function and in the mutationFn, we hit the endpoint to POST the updated 
+    user profile and pass in the body, the profileImg or coverImg then we handle the errors and onSuccess display the success toast. Now,
+    we need to invalidate two different queries one to be able to fetch the user profile again so that we can update the profile page 
+    profile image and another invalidate the authenticated user query in order to update the profile information on the left bottom side.
+    We do this simultaneously using Promise.all we also add a toast for the error. Now, we would like to call the updateProfile function 
+    when we click the update button which shows up only when we have selected an image from our machine to be set as the coverImg or the 
+    profileImg. Now, we will use the same mutation function for updating the username, email, bio, link etc. by just changing the things
+    that we pass in the body and also adding the useEffect in the formdata for autofilling the old data or default values into the modal
+    for which we pass the authUser as a prop into the EditProfileModal component both in EditProfileModal.jsx and ProfilePage.jsx. So, for
+    optimising our code we will create a custom hook for this in the src/hooks folder by the name of useUpdateUserProfile.jsx and in this
+    create the function by that name itself and export it. We copy the mutation that we wrote for the profilImg and the coverImg into this
+    function but instead of passing the data into the form body statically, we will pass the form data dynamically. We will pass the form
+    data to the mutationFn and not the hook itself (it is a better approach for some reason). Now, after we update our profileImg or coverImg
+    we are still seeing the update button this is because we still have the state called as coverImg and the profileImg and in our code,
+    it currently says that if there is a coverImg or a profileImg then show the Update button and even after we updated it, it is still in
+    that state and to be able to fix this, instead of using mutate in the useUpdateUserProfile.jsx, we will use mutateAsync so that it 
+    could return us some values then we will go back to our ProfilePage.jsx and change the onClick effect for the Update button to be an
+    async function and add the await keyword before calling the updateProfile function and after the function has returned successfully,
+    we would set the profileImg and the coverImg to be null and that should fix it. This is something to keep in mind, when we want to get
+    some values or await a mutation we can use mutateAsync

@@ -122,15 +122,18 @@ export const updateUser = async (req, res) => {
         }
 
         if(profileImg){
-            await cloudinary.uploader.destroy(user.profileImg.split("/").pop().split(".")[0]); //Delete the previous profile image from Cloudinary. We are using the public_id of the image to delete it. We are splitting the profileImg URL by "/" and getting the last element of the array by using the pop(), which is the public_id of the image. We are then splitting the public_id by "." and getting the first element of the array, which is the public_id without the file extension. This is the format that Cloudinary uses to store the images. We are using this format to delete the image from Cloudinary
+            if(user.profileImg){
+                await cloudinary.uploader.destroy(user.profileImg.split("/").pop().split(".")[0]); //Delete the previous profile image from Cloudinary. We are using the public_id of the image to delete it. We are splitting the profileImg URL by "/" and getting the last element of the array by using the pop(), which is the public_id of the image. We are then splitting the public_id by "." and getting the first element of the array, which is the public_id without the file extension. This is the format that Cloudinary uses to store the images. We are using this format to delete the image from Cloudinary
+            }
 
             const uploadedResponse = await cloudinary.uploader.upload(profileImg);  //Upload the profile image to Cloudinary
             profileImg = uploadedResponse.secure_url;   //Get the secure_url from the response and save it to the profileImg variable, secure_url is a field of the response object that contains the URL of the uploaded image
         }
 
         if(coverImg){
-            await cloudinary.uploader.destroy(user.profileImg.split("/").pop().split(".")[0]); //Delete the previous profile image from Cloudinary. We are using the public_id of the image to delete it. We are splitting the profileImg URL by "/" and getting the last element of the array by using the pop(), which is the public_id of the image. We are then splitting the public_id by "." and getting the first element of the array, which is the public_id without the file extension. This is the format that Cloudinary uses to store the images. We are using this format to delete the image from Cloudinary
-
+            if(user.coverImg){
+                await cloudinary.uploader.destroy(user.profileImg.split("/").pop().split(".")[0]); //Delete the previous profile image from Cloudinary. We are using the public_id of the image to delete it. We are splitting the profileImg URL by "/" and getting the last element of the array by using the pop(), which is the public_id of the image. We are then splitting the public_id by "." and getting the first element of the array, which is the public_id without the file extension. This is the format that Cloudinary uses to store the images. We are using this format to delete the image from Cloudinary
+            }
 
             const uploadedResponse = await cloudinary.uploader.upload(coverImg);  //Upload the cover image to Cloudinary
             coverImg = uploadedResponse.secure_url;   //Get the secure_url from the response and save it to the coverImg variable
