@@ -530,3 +530,7 @@
     we will map through the oldData of the post and for every post we will check if the current post is the post that the user is liking, 
     if it is that post then we will return all the other values of the post but we'll just update the likes array with the one that we just
     got i.e. the updatedLikes array and if it is not the same post then we will return the post as it is.
+55. Now, we add the commenting functionality, for that we create a mutation, following a similar approach to do that as used in liking and
+    unliking posts. We also want to make the formattedDate dynamic instead of hard coded. For this under /src/utils/ we create a date folder
+    in which we create a file index.js in this we paste the code from the github repo and then call the function in the formattedDate 
+    variable passing the post.createdAt field to it.
