@@ -588,4 +588,38 @@
     could return us some values then we will go back to our ProfilePage.jsx and change the onClick effect for the Update button to be an
     async function and add the await keyword before calling the updateProfile function and after the function has returned successfully,
     we would set the profileImg and the coverImg to be null and that should fix it. This is something to keep in mind, when we want to get
-    some values or await a mutation we can use mutateAsync
+    some values or await a mutation we can use mutateAsync.
+59. Now, we will deploy our app on the internet. For this we will use a platform called render.com on which we can deploy our application
+    for free. But first we need to create an account and then log in with our GitHub account. Before deploying our app on render, we need
+    to create a GitHub repo and then push the code that we have written so far. For this we will go to our GitHub and create a new repo
+    giving it whatever name that we want to give it. After creating our repo, it will give us a bunch of commands. Since we already have
+    an existing repository locally, we will copy those commands. The name of our branch can be 'main' or 'master', change it accordingly
+    in the commands. Now, open up a new powershell terminal and make sure that we are under the project file's root and we will paste 
+    these commands there and push enter and that will push the code to the GitHub repo. To deploy the application we cannot just drag And
+    drop to the render and deploy it because it is a fullstack application and we need to do some configuration in the backend. The current
+    state of our application is that we have our front end on the localhost:3000 and the back end on the localhost:5000 and we would like
+    to deploy both of them under the same domain and we can do this by configuring the server.js file and we are going to do this so that
+    we can get rid of the CORS errors and it is really convenient to just deploy all of our application under the same domain and since our
+    project is not really really huge it is fine to deploy it like that. We need to add one more script to our package.json, when we push
+    our code to the render, they are not going to have the node modules folder for the backend or the frontend so first we need to install 
+    those dependencies so we will provide the command that render will run for us in the backend or in their server i.e. 
+    "build" : "npm install && npm install --prefix frontend && npm run build --prefix frontend"
+    The first npm install is to install the node_modules dependencies for the backend and the next one is equivalent to cd -ing into the 
+    frontend folder and running npm install and the last command is so that vite could just build our react application and give us an
+    optimized version of the application that we built. We can also check out the optimised version of the application that we built by 
+    cd -ing into the frontend folder and running the npm run build command, this will generate the optimized version of our application in
+    a folder called dist. And now we can just go into the server.js and then just add a couple of different functions or configurations, 
+    first thing that we want to get is __dirname in which we use path.resolve where we get the path from the path package which is a built-in
+    node module. Now, we will go after the routes that we have specified and after them, and we'll just say whatever the request is coming,
+    whatever the route is other than those mentioned above, we're going to navigate the user to the react application i.e 
+    if(process.env.NODE_ENV === "production") then we would like to make the dist folder to be a static asset. And then we'll say whatever
+    the request is, just navigate it to the react application and just send the index.html file that we have. So, what this means is that 
+    if user sends request to login, signup, logout, we're going to hit the authRoutes endpoint then all the user routes, post routes and
+    notification routes, we are going to hit their respective endpoints but other than that, such as home page, profile page, we are going
+    to hit the get request and show the react application. Now back in package.json, for the dev, when we run 'npm run dev', we would like
+    to set the NODE_ENV to be development and when we start the application in production i.e. when we deploy the application the NODE_ENV
+    is going to be set as production. To check if it is working, we will cd into the root and then run the command, 'npm run build' and it is
+    going to install the dependencies for the backend and the frontend then it is going to build the react application. Once that is done, we
+    can say 'npm run start' so it is going to run this production ready application within the server.js file and now we could visit
+    localhost:5000 i.e. our server and still get our react application it is because we added the if check where we just say if we don't hit
+    our endpoints you could show the user the react application.
