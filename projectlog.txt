@@ -622,4 +622,7 @@
     going to install the dependencies for the backend and the frontend then it is going to build the react application. Once that is done, we
     can say 'npm run start' so it is going to run this production ready application within the server.js file and now we could visit
     localhost:5000 i.e. our server and still get our react application it is because we added the if check where we just say if we don't hit
-    our endpoints you could show the user the react application.
+    our endpoints you could show the user the react application. After making and commiting all the above changes we can go ahead into 
+    render and then deploy our app by following the path New -> Web Service -> Build and Deploy from the Git Repo -> Select the Git Repo
+    that we have just created -> Pass our environment variables (Our build command is npm run build and our Run command is npm run start) 
+    -> Select the free tier -> Pass the environment variables one by one from our .env file -> Create Web Service
